@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create Portfolio</h1>
+
+        <form id="portfolioForm">
+
+            <h2>Personal Information</h2>
+
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="fullName" placeholder="Full Name" required>
+            <input type="text" id="title" placeholder="Title" required>
+            <input type="text" id="profileImage" placeholder="Profile Image URL">
+            <textarea id="about" placeholder="About Me" required></textarea>
+
+            <h2>Skills</h2>
+            <input type="text" id="skills" placeholder="HTML,CSS,JavaScript,React" required>
+
+            <h2>Education</h2>
+            <input type="text" id="college" placeholder="College" required>
+            <input type="text" id="degree" placeholder="Degree" required>
+            <input type="number" id="year" placeholder="Year" required>
+
+            <h2>Projects</h2>
+            <input type="text" id="projectTitle" placeholder="Project Title" required>
+            <textarea id="projectDescription" placeholder="Project Description" required></textarea>
+            <input type="text" id="github" placeholder="Github Link">
+            <input type="text" id="liveLink" placeholder="Live Demo Link">
+
+            <h2>Experience</h2>
+            <input type="text" id="company" placeholder="Company">
+            <input type="text" id="role" placeholder="Role">
+            <input type="text" id="years" placeholder="Years">
+
+            <h2>Social Links</h2>
+            <input type="text" id="githubSocial" placeholder="Github Profile">
+            <input type="text" id="linkedin" placeholder="LinkedIn">
+            <input type="text" id="instagram" placeholder="Instagram">
+
+            <button type="submit">Save Portfolio</button>
+            <button type="button" onclick="viewPortfolio()">View Portfolio</button>
+            <button type="button" onclick="updatePortfolio()">Update Portfolio</button>
+            <button type="button" onclick="deletePortfolio()">Delete Portfolio</button>
+
+            <a href="portfolio.html"><button type="button">Preview Portfolio</button></a>
+            <a href="login.html"><button type="button">Logout</button></a>
+
+        </form>
+    </div>
+
+    <script src="./js/dashboard.js"></script>
+</body>
+</html>
