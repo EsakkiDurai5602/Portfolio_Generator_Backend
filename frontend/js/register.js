@@ -1,49 +1,62 @@
-const registerForm=document.getElementById("registerForm");
+const registerForm = document.getElementById("registerForm");
 
-registerForm.addEventListener("submit",async e=>{
+registerForm.addEventListener("submit", async (e) => {
+
     e.preventDefault();
 
-    const name=document.getElementById("name").value;
-    const email=document.getElementById("email").value;
-    const password=document.getElementById("password").value;
-    const confirmPassword=document.getElementById("confirmPassword").value;
+    const name = document.getElementById("name").value;
 
-    if(password!==confirmPassword){
+    const email = document.getElementById("email").value;
+
+    const password = document.getElementById("password").value;
+
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if(password !== confirmPassword){
+
         alert("Passwords do not match");
+
         return;
     }
 
-    const user={name,email,password};
+    const user = {
+        name,
+        email,
+        password
+    };
 
     try{
 
-        const response=await fetch("http://localhost:8001/auth/register",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(user)
-        });
+        const response = await fetch(
+            "http://localhost:8001/auth/register",
+            {
+                method:"POST",
 
-        const data=await response.json();
+                headers:{
+                    "Content-Type":"application/json"
+                },
 
-        if(!response.ok){
-            alert(data.message);
-            return;
-        }
+                body:JSON.stringify(user)
+            }
+        );
+
+        const data = await response.json();
 
         alert(data.message);
 
-        registerForm.reset();
+        if(response.ok){
 
-        window.location.href="login.html";
+            registerForm.reset();
 
-    }catch(err){
+            window.location.href = "login.html";
+        }
+
+    }
+    catch(err){
 
         console.log(err);
 
         alert("Something went wrong");
-
     }
 
 });
