@@ -6,15 +6,10 @@ async function createPortfolio(req, res) {
         const portfolio = new Portfolio(req.body);
         await portfolio.save();
 
-        res.status(201).json({
-            message: "Portfolio Created",
-            portfolio
-        });
+        res.status(201).json({message: "Portfolio Created",portfolio});
 
     } catch (err) {
-        res.status(500).json({
-            message: "Error creating portfolio"
-        });
+        res.status(500).json({message: "Error creating portfolio"});
     }
 }
 
@@ -26,17 +21,13 @@ async function getPortfolio(req, res) {
         const portfolio = await Portfolio.findOne({ email });
 
         if (!portfolio) {
-            return res.status(404).json({
-                message: "Portfolio not found"
-            });
+            return res.status(404).json({message: "Portfolio not found"});
         }
 
         res.json(portfolio);
 
     } catch (err) {
-        res.status(500).json({
-            message: "Error fetching portfolio"
-        });
+        res.status(500).json({message: "Error fetching portfolio"});
     }
 }
 
@@ -45,16 +36,9 @@ async function updatePortfolio(req, res) {
     try {
         const email = req.params.email;
 
-        const updated = await Portfolio.findOneAndUpdate(
-            { email },
-            req.body,
-            { new: true }
-        );
+        const updated = await Portfolio.findOneAndUpdate({ email },req.body,{ new: true });
 
-        res.json({
-            message: "Portfolio Updated",
-            updated
-        });
+        res.json({message: "Portfolio Updated",updated});
 
     } catch (err) {
         res.status(500).json({
@@ -70,9 +54,7 @@ async function deletePortfolio(req, res) {
 
         await Portfolio.findOneAndDelete({ email });
 
-        res.json({
-            message: "Portfolio Deleted"
-        });
+        res.json({message: "Portfolio Deleted"});
 
     } catch (err) {
         res.status(500).json({
