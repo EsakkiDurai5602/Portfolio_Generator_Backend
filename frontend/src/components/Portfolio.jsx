@@ -23,7 +23,7 @@ function Portfolio() {
   return (
     <div className="portfolio-container">
 
-      {/* HERO SECTION */}
+    
       <div className="profile-section">
         <img
           src={portfolio.profileImage || "https://via.placeholder.com/150"}
@@ -34,13 +34,13 @@ function Portfolio() {
         <h3>{portfolio.title}</h3>
       </div>
 
-      {/* ABOUT */}
+      
       <div className="section">
         <h2>About Me</h2>
         <p>{portfolio.about}</p>
       </div>
 
-      {/* SKILLS */}
+      
       <div className="section">
         <h2>Skills</h2>
         <ul id="skillsList">
@@ -50,7 +50,7 @@ function Portfolio() {
         </ul>
       </div>
 
-      {/* EDUCATION */}
+    
       <div className="section">
         <h2>Education</h2>
 
@@ -63,7 +63,7 @@ function Portfolio() {
         ))}
       </div>
 
-      {/* PROJECTS */}
+   
       <div className="section">
         <h2>Projects</h2>
 
@@ -87,7 +87,7 @@ function Portfolio() {
         ))}
       </div>
 
-      {/* EXPERIENCE */}
+      
       <div className="section">
         <h2>Experience</h2>
 
@@ -100,7 +100,7 @@ function Portfolio() {
         ))}
       </div>
 
-      {/* SOCIAL LINKS */}
+
       <div className="section">
         <h2>Social Links</h2>
 
