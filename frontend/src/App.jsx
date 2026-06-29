@@ -1,10 +1,14 @@
 import RoutePage from "./routes/Route";
+import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
   return (
-    <>
-      <RoutePage />
-    </>
+    <ThemeProvider>
+      <AuthProvider>
+        <RoutePage />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

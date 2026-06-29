@@ -1,14 +1,34 @@
 const express = require("express");
 const router = express.Router();
 
-const {createPortfolio,getPortfolio,updatePortfolio,deletePortfolio} = require("../controllers/portfolioController");
+const {
+  createPortfolio,
+  getPortfolio,
+  getMyPortfolio,
+  updatePortfolio,
+  deletePortfolio,
+  togglePublishPortfolio,
+  getAllPublishedPortfolios,
+  deletePortfolioAdmin,
+} = require("../controllers/portfolioController");
 
-router.post("/create", createPortfolio);
+const authMiddleware = require("../middleware/authMiddleware");
+const authorizationMiddleware = require("../middleware/authorizationMiddleware");
 
-router.get("/:email", getPortfolio);
+router.get("/public", getAllPublishedPortfolios);
+router.get("/:identifier", getPortfolio);
 
-router.put("/update/:email", updatePortfolio);
+router.post("/", authMiddleware, createPortfolio);
+router.get("/my/portfolio", authMiddleware, getMyPortfolio);
+router.put("/", authMiddleware, updatePortfolio);
+router.delete("/", authMiddleware, deletePortfolio);
+router.patch("/publish", authMiddleware, togglePublishPortfolio);
 
-router.delete("/delete/:email", deletePortfolio);
+router.delete(
+  "/:portfolioId/admin",
+  authMiddleware,
+  authorizationMiddleware(["admin"]),
+  deletePortfolioAdmin
+);
 
 module.exports = router;
