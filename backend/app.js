@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const connectDB = require("./config/database");
 const errorHandler = require("./middleware/errorHandler");
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 8001;
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 connectDB();
 

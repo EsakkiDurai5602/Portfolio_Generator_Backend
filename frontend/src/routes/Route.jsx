@@ -5,6 +5,7 @@ import Register from "../components/Register";
 import Login from "../components/Login";
 import Dashboard from "../components/Dashboard";
 import Portfolio from "../components/Portfolio";
+import Explore from "../components/Explore";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 
 function RoutePage() {
@@ -14,6 +15,7 @@ function RoutePage() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/explore" element={<Explore />} />
 
         <Route
           path="/dashboard"
@@ -26,6 +28,15 @@ function RoutePage() {
 
         <Route
           path="/portfolio"
+          element={
+            <ProtectedRoute>
+              <Portfolio />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/portfolio/:identifier"
           element={
             <ProtectedRoute>
               <Portfolio />

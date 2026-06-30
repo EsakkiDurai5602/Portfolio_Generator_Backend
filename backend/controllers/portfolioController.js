@@ -194,6 +194,111 @@ async function deletePortfolioAdmin(req, res) {
   }
 }
 
+async function toggleLikePortfolio(req, res) {
+  try {
+    const { portfolioId } = req.params;
+    const portfolio = await Portfolio.findById(portfolioId);
+    if (!portfolio) {
+      return sendError(res, "Portfolio not found", 404);
+    }
+    
+    const userId = req.user.userId;
+    const index = portfolio.likes.indexOf(userId);
+    
+    if (index === -1) {
+      portfolio.likes.push(userId);
+    } else {
+      portfolio.likes.splice(index, 1);
+    }
+    
+    await portfolio.save();
+    return sendSuccess(
+      res,
+      { likesCount: portfolio.likes.length, isLiked: index === -1 },
+      "Like toggled successfully"
+    );
+  } catch (err) {
+    console.error("Toggle like error:", err);
+    return sendError(res, err.message || "Failed to toggle like", 500);
+  }
+}
+
+async function addComment(req, res) {
+  try {
+    const { portfolioId } = req.params;
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return sendError(res, "Comment text is required", 400);
+    }
+    
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return sendError(res, "User not found", 404);
+    }
+
+    const portfolio = await Portfolio.findById(portfolioId);
+    if (!portfolio) {
+      return sendError(res, "Portfolio not found", 404);
+    }
+    
+    const newComment = {
+      userId: req.user.userId,
+      userName: user.name,
+      text: text.trim(),
+      replies: []
+    };
+    
+    portfolio.comments.push(newComment);
+    await portfolio.save();
+    
+    const addedComment = portfolio.comments[portfolio.comments.length - 1];
+    
+    return sendSuccess(res, addedComment, "Comment added successfully");
+  } catch (err) {
+    console.error("Add comment error:", err);
+    return sendError(res, err.message || "Failed to add comment", 500);
+  }
+}
+
+async function addReply(req, res) {
+  try {
+    const { portfolioId, commentId } = req.params;
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return sendError(res, "Reply text is required", 400);
+    }
+    
+    const user = await User.findById(req.user.userId);
+    if (!user) {
+      return sendError(res, "User not found", 404);
+    }
+
+    const portfolio = await Portfolio.findById(portfolioId);
+    if (!portfolio) {
+      return sendError(res, "Portfolio not found", 404);
+    }
+    
+    const comment = portfolio.comments.id(commentId);
+    if (!comment) {
+      return sendError(res, "Comment not found", 404);
+    }
+    
+    const newReply = {
+      userId: req.user.userId,
+      userName: user.name,
+      text: text.trim()
+    };
+    
+    comment.replies.push(newReply);
+    await portfolio.save();
+    
+    return sendSuccess(res, comment, "Reply added successfully");
+  } catch (err) {
+    console.error("Add reply error:", err);
+    return sendError(res, err.message || "Failed to add reply", 500);
+  }
+}
+
 module.exports = {
   createPortfolio,
   getPortfolio,
@@ -203,4 +308,7 @@ module.exports = {
   togglePublishPortfolio,
   getAllPublishedPortfolios,
   deletePortfolioAdmin,
+  toggleLikePortfolio,
+  addComment,
+  addReply,
 };

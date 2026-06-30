@@ -4,10 +4,19 @@ import API from "../services/api";
 import Header from "./Header";
 import { useAuth } from "../hooks/useAuth";
 
+const ensureThreeProjects = (projectsArray) => {
+  const arr = projectsArray ? [...projectsArray] : [];
+  while (arr.length < 3) {
+    arr.push({ title: "", description: "", github: "", liveLink: "" });
+  }
+  return arr.slice(0, 3);
+};
+
 function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [hasPortfolio, setHasPortfolio] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const [portfolio, setPortfolio] = useState({
     email: user?.email || localStorage.getItem("email") || "",
@@ -17,7 +26,11 @@ function Dashboard() {
     about: "",
     skills: "",
     education: [{ college: "", degree: "", year: "" }],
-    projects: [{ title: "", description: "", github: "", liveLink: "" }],
+    projects: [
+      { title: "", description: "", github: "", liveLink: "" },
+      { title: "", description: "", github: "", liveLink: "" },
+      { title: "", description: "", github: "", liveLink: "" }
+    ],
     experience: [{ company: "", role: "", years: "" }],
     socialLinks: { github: "", linkedin: "", instagram: "" },
   });
@@ -32,6 +45,7 @@ function Dashboard() {
           setPortfolio({
             ...data,
             skills: data.skills ? data.skills.join(",") : "",
+            projects: ensureThreeProjects(data.projects),
           });
           setHasPortfolio(true);
         }
@@ -53,6 +67,36 @@ function Dashboard() {
     }
   }, [user]);
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setUploadingImage(true);
+    try {
+      const response = await API.post("/portfolio/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data && response.data.url) {
+        setPortfolio((prev) => ({
+          ...prev,
+          profileImage: response.data.url,
+        }));
+        alert("Image uploaded successfully!");
+      }
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert(err.response?.data?.message || "Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   // Helper to strip database metadata fields like _id, userId, __v so Joi validation passes
   const getCleanPayload = () => {
     return {
@@ -69,12 +113,14 @@ function Dashboard() {
         degree: edu.degree || "",
         year: edu.year || "",
       })),
-      projects: portfolio.projects.map((proj) => ({
-        title: proj.title || "",
-        description: proj.description || "",
-        github: proj.github || "",
-        liveLink: proj.liveLink || "",
-      })),
+      projects: portfolio.projects
+        .filter((proj) => proj.title && proj.title.trim())
+        .map((proj) => ({
+          title: proj.title || "",
+          description: proj.description || "",
+          github: proj.github || "",
+          liveLink: proj.liveLink || "",
+        })),
       experience: portfolio.experience.map((exp) => ({
         company: exp.company || "",
         role: exp.role || "",
@@ -105,7 +151,11 @@ function Dashboard() {
     try {
       const response = await API.get(`/portfolio/${portfolio.email}`);
       const data = response.data.data;
-      setPortfolio({ ...data, skills: data.skills ? data.skills.join(",") : "" });
+      setPortfolio({
+        ...data,
+        skills: data.skills ? data.skills.join(",") : "",
+        projects: ensureThreeProjects(data.projects),
+      });
       setHasPortfolio(true);
       alert("Portfolio Loaded Successfully");
     } catch (err) {
@@ -125,6 +175,25 @@ function Dashboard() {
     }
   };
 
+  const togglePublish = async () => {
+    try {
+      const response = await API.patch("/portfolio/publish");
+      alert(response.data.message || "Publish status updated");
+      
+      const responseGet = await API.get("/portfolio/my/portfolio");
+      if (responseGet.data && responseGet.data.data) {
+        const data = responseGet.data.data;
+        setPortfolio({
+          ...data,
+          skills: data.skills ? data.skills.join(",") : "",
+          projects: ensureThreeProjects(data.projects),
+        });
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to update publish status");
+    }
+  };
+
   const deletePortfolio = async () => {
     try {
       await API.delete("/portfolio");
@@ -134,7 +203,11 @@ function Dashboard() {
         email: user?.email || "",
         fullName: "", title: "", profileImage: "", about: "", skills: "",
         education: [{ college: "", degree: "", year: "" }],
-        projects: [{ title: "", description: "", github: "", liveLink: "" }],
+        projects: [
+          { title: "", description: "", github: "", liveLink: "" },
+          { title: "", description: "", github: "", liveLink: "" },
+          { title: "", description: "", github: "", liveLink: "" }
+        ],
         experience: [{ company: "", role: "", years: "" }],
         socialLinks: { github: "", linkedin: "", instagram: "" },
       });
@@ -189,9 +262,15 @@ function Dashboard() {
                   onChange={(e) => setPortfolio({ ...portfolio, title: e.target.value })} required />
               </div>
               <div className="form-group">
-                <label>Profile Image URL</label>
-                <input type="text" placeholder="Profile Image URL" value={portfolio.profileImage}
-                  onChange={(e) => setPortfolio({ ...portfolio, profileImage: e.target.value })} />
+                <label>Profile Image (URL or Upload)</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <input type="text" placeholder="Profile Image URL" value={portfolio.profileImage}
+                    onChange={(e) => setPortfolio({ ...portfolio, profileImage: e.target.value })} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} style={{ padding: '8px', fontSize: '13px', width: 'auto', flex: 1 }} />
+                    {uploadingImage && <span style={{ fontSize: '13px', color: 'var(--accent-color)', fontWeight: '600' }}>Uploading...</span>}
+                  </div>
+                </div>
               </div>
             </div>
             <div className="form-group">
@@ -241,41 +320,50 @@ function Dashboard() {
           </div>
 
           <div className="form-section">
-            <h2>Projects</h2>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Project Title</label>
-                <input type="text" placeholder="Title" value={portfolio.projects[0].title}
-                  onChange={(e) => setPortfolio({
-                    ...portfolio,
-                    projects: [{ ...portfolio.projects[0], title: e.target.value }]
-                  })} />
+            <h2>Projects (Up to 3)</h2>
+            {portfolio.projects.map((project, index) => (
+              <div key={index} className="project-form-card" style={{ marginBottom: index < 2 ? '24px' : '0', paddingBottom: index < 2 ? '24px' : '0', borderBottom: index < 2 ? '1px solid var(--card-border)' : 'none' }}>
+                <h3 style={{ fontSize: '15px', color: 'var(--accent-color)', marginBottom: '12px' }}>Project {index + 1}</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Project Title</label>
+                    <input type="text" placeholder="Title" value={project.title || ""}
+                      onChange={(e) => {
+                        const newProjects = [...portfolio.projects];
+                        newProjects[index] = { ...newProjects[index], title: e.target.value };
+                        setPortfolio({ ...portfolio, projects: newProjects });
+                      }} />
+                  </div>
+                  <div className="form-group">
+                    <label>GitHub Repo URL</label>
+                    <input type="text" placeholder="Github Link" value={project.github || ""}
+                      onChange={(e) => {
+                        const newProjects = [...portfolio.projects];
+                        newProjects[index] = { ...newProjects[index], github: e.target.value };
+                        setPortfolio({ ...portfolio, projects: newProjects });
+                      }} />
+                  </div>
+                  <div className="form-group">
+                    <label>Live Link</label>
+                    <input type="text" placeholder="Live Demo Link" value={project.liveLink || ""}
+                      onChange={(e) => {
+                        const newProjects = [...portfolio.projects];
+                        newProjects[index] = { ...newProjects[index], liveLink: e.target.value };
+                        setPortfolio({ ...portfolio, projects: newProjects });
+                      }} />
+                  </div>
+                </div>
+                <div className="form-group" style={{ marginTop: '12px' }}>
+                  <label>Description</label>
+                  <textarea placeholder="Description" value={project.description || ""}
+                    onChange={(e) => {
+                      const newProjects = [...portfolio.projects];
+                      newProjects[index] = { ...newProjects[index], description: e.target.value };
+                      setPortfolio({ ...portfolio, projects: newProjects });
+                    }} />
+                </div>
               </div>
-              <div className="form-group">
-                <label>GitHub Repo URL</label>
-                <input type="text" placeholder="Github" value={portfolio.projects[0].github}
-                  onChange={(e) => setPortfolio({
-                    ...portfolio,
-                    projects: [{ ...portfolio.projects[0], github: e.target.value }]
-                  })} />
-              </div>
-              <div className="form-group">
-                <label>Live Link</label>
-                <input type="text" placeholder="Live Link" value={portfolio.projects[0].liveLink}
-                  onChange={(e) => setPortfolio({
-                    ...portfolio,
-                    projects: [{ ...portfolio.projects[0], liveLink: e.target.value }]
-                  })} />
-              </div>
-            </div>
-            <div className="form-group">
-              <label>Description</label>
-              <textarea placeholder="Description" value={portfolio.projects[0].description}
-                onChange={(e) => setPortfolio({
-                  ...portfolio,
-                  projects: [{ ...portfolio.projects[0], description: e.target.value }]
-                })} />
-            </div>
+            ))}
           </div>
 
           <div className="form-section">
@@ -354,6 +442,21 @@ function Dashboard() {
             <button type="button" className="btn-action btn-delete" onClick={deletePortfolio}>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', verticalAlign: 'middle' }}><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
               Delete
+            </button>
+            <button
+              type="button"
+              className="btn-action"
+              style={{
+                background: portfolio.isPublished
+                  ? "linear-gradient(135deg, #10b981, #059669)"
+                  : "linear-gradient(135deg, #6366f1, #4f46e5)",
+                boxShadow: portfolio.isPublished
+                  ? "0 4px 12px rgba(16, 185, 129, 0.25)"
+                  : "0 4px 12px rgba(99, 102, 241, 0.25)"
+              }}
+              onClick={togglePublish}
+            >
+              {portfolio.isPublished ? "Unpublish" : "Publish"}
             </button>
             <Link to="/portfolio" style={{ textDecoration: 'none' }}>
               <button type="button" className="btn-action btn-preview">

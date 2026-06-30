@@ -24,6 +24,9 @@ function Header() {
         <Link to="/" className={location.pathname === "/" ? "active-link" : ""}>
           Home
         </Link>
+        <Link to="/explore" className={location.pathname === "/explore" ? "active-link" : ""}>
+          Explore
+        </Link>
         {!isAuthenticated ? (
           <>
             <Link

@@ -974,3 +974,192 @@ footer,
     font-size: 14px;
   }
 }
+
+/* PDF Download Button Styles */
+.btn-download-pdf {
+  padding: 10px 22px;
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: 10px;
+  color: white !important;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--primary-shadow);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.btn-download-pdf:hover:not(:disabled) {
+  background: var(--primary-hover-gradient);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px var(--primary-shadow);
+}
+
+.btn-download-pdf:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Professional PDF Print Mode Overrides */
+.portfolio-container.pdf-print-mode {
+  --bg-gradient: none !important;
+  --bg-color: #ffffff !important;
+  --text-primary: #0f172a !important;
+  --text-secondary: #334155 !important;
+  --text-muted: #475569 !important;
+  --card-bg: #ffffff !important;
+  --card-border: #e2e8f0 !important;
+  --card-shadow: none !important;
+  --primary-gradient: none !important;
+  --primary-hover-gradient: none !important;
+  --primary-shadow: none !important;
+  --accent-color: #4f46e5 !important;
+
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 40px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Force light background properties on printing elements */
+.portfolio-container.pdf-print-mode * {
+  text-shadow: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+/* Profile Section overrides for PDF */
+.portfolio-container.pdf-print-mode .profile-section {
+  border-bottom: 2px solid #e2e8f0 !important;
+  padding-bottom: 24px !important;
+  margin-bottom: 24px !important;
+}
+
+.portfolio-container.pdf-print-mode .profile-image {
+  border: 3px solid #e2e8f0 !important;
+  width: 120px !important;
+  height: 120px !important;
+  box-shadow: none !important;
+}
+
+.portfolio-container.pdf-print-mode .profile-section h1 {
+  color: #0f172a !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+}
+
+.portfolio-container.pdf-print-mode .profile-section .title {
+  color: #4f46e5 !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+/* Sections overrides for PDF */
+.portfolio-container.pdf-print-mode .section {
+  background: #ffffff !important;
+  border: none !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  border-radius: 0 !important;
+  padding: 20px 0 !important;
+  margin-top: 16px !important;
+}
+
+.portfolio-container.pdf-print-mode .section:last-of-type {
+  border-bottom: none !important;
+}
+
+.portfolio-container.pdf-print-mode .section h3 {
+  color: #4f46e5 !important;
+  border-bottom: 2px solid #4f46e5 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+  padding-bottom: 4px !important;
+  display: inline-block !important;
+}
+
+.portfolio-container.pdf-print-mode .section p {
+  color: #334155 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* Section Item (Education, Experience, Project cards) overrides for PDF */
+.portfolio-container.pdf-print-mode .section-item {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-left: 4px solid #4f46e5 !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+  transform: none !important;
+}
+
+.portfolio-container.pdf-print-mode .section-item h4 {
+  color: #0f172a !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+.portfolio-container.pdf-print-mode .section-item .degree,
+.portfolio-container.pdf-print-mode .section-item .role {
+  color: #4f46e5 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.portfolio-container.pdf-print-mode .section-item .year,
+.portfolio-container.pdf-print-mode .section-item .years {
+  color: #475569 !important;
+  font-size: 12px !important;
+}
+
+/* Skills override for PDF */
+.portfolio-container.pdf-print-mode #skillsList li {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  transform: none !important;
+}
+
+/* Links override for PDF */
+.portfolio-container.pdf-print-mode .links a,
+.portfolio-container.pdf-print-mode .social-links a {
+  background: #f8fafc !important;
+  color: #4f46e5 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+.portfolio-container.pdf-print-mode .links a:hover,
+.portfolio-container.pdf-print-mode .social-links a:hover {
+  background: #f1f5f9 !important;
+}
+
+/* Footer override for PDF */
+.portfolio-container.pdf-print-mode .portfolio-footer {
+  border-top: 1px solid #e2e8f0 !important;
+  margin-top: 40px !important;
+  padding-top: 20px !important;
+  color: #64748b !important;
+}
